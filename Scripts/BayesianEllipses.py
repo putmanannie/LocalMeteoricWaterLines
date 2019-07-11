@@ -86,7 +86,7 @@ import scipy as sp
 from shapely.geometry.point import Point
 from shapely import affinity
 
-suppfileloc = 'C:\Users\u0929173\Documents\Python\WaterIsotopeAnalysis_012016\MeteoricWaterLine\ForSupplementalToPublish'
+suppfileloc = 'C:\Users\u0929173\Documents\Python\WaterIsotopeAnalysis_012016\MeteoricWaterLine\ForSupplemental'
 os.chdir(os.path.join(suppfileloc, 'c:Scripts'))
 import retrievedatasets
 os.chdir(suppfileloc)
@@ -129,7 +129,7 @@ rows = 0
 Pre2 = np.where(Pre == -1, 0, Pre)
 PreAvgs = np.zeros((Pre.shape[0], 4))
 for i in range(4):
-   PreAvgs[:, i] = np.average(Pre2[:, seas == 0], axis = 1)*3    
+   PreAvgs[:, i] = np.average(Pre2[:, seas == i], axis = 1)    
 #need to calculate the seasonal average values for precipitation
 
 #set thresholds/constants for use
@@ -215,7 +215,7 @@ for i in longrecs:
     #increment indexer
     rows = rows+1
     
-    #save in the interim 
+    #save in the interim
     bayesell.to_csv(os.path.join(dataloc, "Bayesell_Zscore.csv"), index = True)  
     
     for k in np.array([18, 24, 30, 36, 48, 60, 72, 84, 96, 108, 120]):
@@ -224,9 +224,9 @@ for i in longrecs:
         datthresh = np.zeros(4)
         #select double the number of starting points needed in 
         #case some don't work
-        startinds = np.random.choice(len(inds), calcs*2, replace = False)
+        startinds = np.random.choice(len(inds), calcs*3, replace = False)
 
-        while not all(datthresh == 1) and (trycounter < 5) and (rounds < min([calcs, (len(inds)-k)+1])):
+        while not all(datthresh == 1) and (trycounter < 10) and (rounds < min([calcs, (len(inds)-k)+1])):
             
             datthresh = np.zeros(4) 
             #this part could fail bc startinds[rounds]+k could be greater than len(inds)
@@ -287,7 +287,11 @@ for i in longrecs:
                 #if it fails when the dataset is the largest it can be, then do not try at
                 #smaller dataset sizes
                 print('could not create a suitable subset')
-                trycounter = trycounter+1   
-
+                trycounter = trycounter+1  
+        
+        # save in the interim!        
+        bayesell.to_csv(os.path.join(dataloc, "Bayesell_Zscore.csv"), index = True) 
+        
+#final save
 bayesell.to_csv(os.path.join(dataloc, "Bayesell_Zscore.csv"), index = True)  
 
